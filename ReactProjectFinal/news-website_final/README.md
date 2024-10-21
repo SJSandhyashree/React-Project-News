@@ -1,70 +1,109 @@
-# Getting Started with Create React App
+Project Documentation for News Website
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Introduction
 
-## Available Scripts
+This project is a news aggregator website built using  React .The primary goal of the website is to pull articles from multiple news APIs and present them in a clean, user-friendly format. The key features of the website include a search option, a highlights marquee, integration with three different APIs for retrieving news articles, and additional functionalities such as a "read more" feature for each news article and direct access to share news via social media platforms.
 
-In the project directory, you can run:
+Features:
 
-### `npm start`
+ 1. Search Functionality
+   - Users can search for specific news articles by entering keywords into the search bar. This functionality filters the news displayed based on the user's search query, allowing for easy navigation and retrieval of relevant articles.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+2. Highlights Marquee
+   - The website includes a marquee that scrolls through the top highlights from the selected APIs. This provides users with quick access to the latest and most popular news headlines in a visually appealing manner.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+ 3. API Integration
+   - The website pulls articles from three different APIs, ensuring a diverse and rich selection of news content. These APIs provide real-time news updates from various sources, ensuring users have access to the latest news on a wide range of topics.
+4. Read More Functionality
+   - Each news article has a "Read More" button that links to the full article. This feature allows users to dive deeper into news stories they find interesting.
 
-### `npm test`
+ 5. Social Media Access
+   - Users can quickly share articles via social media platforms like Twitter and Facebook using integrated buttons. This makes it easy for users to engage with the news and share it with their networks.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+Docker Implementation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+What is Docker?
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Docker is a platform that allows developers to automate the deployment of applications inside lightweight, portable containers. Containers include everything the software needs to run (code, runtime, libraries, etc.), ensuring consistency across different environments (development, testing, production).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Why Docker for This Project?
 
-### `npm run eject`
+By containerizing the news website using Docker, the application can be run in any environment without compatibility issues. This ensures that the website can be easily shared, tested, and deployed across various platforms without worrying about environment-specific problems such as missing dependencies or software versions.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Dockerfile and Explanation
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Below is the Dockerfile that was created to containerize the React application:
+Dockerfile
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+#Use the official Node.js image based on Alpine for a smaller image size
+FROM node:20-alpine
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# Set the working directory in the container
+WORKDIR /app
 
-## Learn More
+# Copy package.json and package-lock.json files
+COPY package*.json ./
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# Install dependencies
+RUN npm install
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+# Copy the rest of the application code
+COPY . .
 
-### Code Splitting
+# Build the React app
+RUN npm run build
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+# Expose port 3000
+EXPOSE 3000
 
-### Analyzing the Bundle Size
+# Start the app in development mode
+CMD ["npm", "run", "dev"]
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+ Dockerfile Breakdown:
 
-### Making a Progressive Web App
+-Base Image: We're using `node:20-alpine` as the base image. This is a lightweight image that contains Node.js and npm, which are required to build and run the React application.
+  
+- WORKDIR: The `WORKDIR /app` command sets the working directory inside the Docker container. All subsequent commands will be executed inside this directory.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- COPY package.json: We copy the `package.json` and `package-lock.json` files into the container, which are needed to install dependencies.
 
-### Advanced Configuration
+- RUN npm install: This command installs all the dependencies defined in `package.json`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- COPY . .: After installing the dependencies, the rest of the application’s code is copied into the container.
 
-### Deployment
+- RUN npm run build: This command builds the React application, preparing it for production.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- EXPOSE 3000: The application will run on port 3000 inside the container, which is exposed to allow access to the application from outside the container.
 
-### `npm run build` fails to minify
+- CMD ["npm", "run", "dev"]: This sets the command that will be run when the container starts. It runs the React app in development mode using `npm run dev`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+ Steps to Build and Run the Docker Container
+
+To containerize and run the React news website using Docker, follow these steps:
+
+ 1. Create the Docker Image
+Ensure you're in the project directory that contains the `Dockerfile` and run the following command to build the Docker image:
+docker build -t react-app .
+
+This command tells Docker to build an image named `react-app` based on the instructions in the Dockerfile.
+
+2. Run the Docker Container
+Once the image has been built successfully, run the container using:
+
+docker run -p 3000:3000 react-app
+
+
+This command maps port `3000` of the Docker container to port `3000` on your local machine, allowing you to access the application via `http://localhost:3000`.
+
+ 3. Verify the Application
+Once the container is running, open a web browser and go to `http://localhost:3000` to see your news website in action.
+
+Conclusion
+
+By using Docker, the news website has been successfully containerized, ensuring that the application can be easily shared, tested, and deployed across different environments. The website itself provides a robust user experience, featuring a powerful search option, highlight marquee, integration with multiple news APIs, and user-friendly features like the "Read More" option and social media sharing.
+
+This setup allows for flexible scaling and deployment, making it easy to extend or modify the application in the future.
